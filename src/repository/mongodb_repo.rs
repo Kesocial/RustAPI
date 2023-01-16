@@ -16,19 +16,19 @@ pub struct MongoRepo {
 }
 
 impl MongoRepo {
-    pub fn init() -> Self {
-        dotenv().ok();
+        pub fn init() -> Self {
+            dotenv().ok();
         let uri = match env::var("DATABASE_URL") {
             Ok(v) => v.to_string(),
             Err(_) => format!("Error loading env variable"),
         };
         let client = Client::with_uri_str(uri).unwrap();
-        let db = client.database("rustDB");
-        let col1: Collection<User> = db.collection("User");
-        let col2: Collection<Todo> = db.collection("Todo");
+        let db = client.database("Rust");
+        let col1: Collection<User> = db.collection("users");
+        let col2: Collection<Todo> = db.collection("todos");
         MongoRepo { col1, col2 }
     }
-
+    
     pub fn create_user(&self, new_user: User) -> Result<InsertOneResult, Error> {
         let new_doc = User {
             id: None,
@@ -42,7 +42,9 @@ impl MongoRepo {
             .expect("Error creating user");
         Ok(user)
     }
+    
 
+    
     pub fn get_user(&self, id: &String) -> Result<User, Error> {
         let obj_id = ObjectId::parse_str(id).unwrap();
         let filter = doc! {"_id": obj_id};
@@ -82,6 +84,7 @@ impl MongoRepo {
         Ok(user_detail)
     }
     pub fn get_all_users(&self) -> Result<Vec<User>, Error> {
+        
         let cursors = self
             .col1
             .find(None, None)

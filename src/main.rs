@@ -37,29 +37,19 @@ impl Fairing for CORS {
 #[launch]
 fn rocket() -> _ {
     let db = MongoRepo::init();
-    rocket::build()
-    .mount(
+    rocket::build().manage(db).manage(CORS).attach(CORS).mount(
         "/",
         routes![
             create_user,
             get_user,
             update_user,
             delete_user,
-            get_all_users
-            ],
-        )
-        .mount(
-            "/",
-            routes![
-                create_todo,
-                get_todo,
-                update_todo,
-                delete_todo,
-                get_all_todos
-                ],
-            )
-            .manage(db)
-            .manage(CORS)
-            .attach(CORS)
-        }
-        
+            get_all_users,
+            create_todo,
+            get_todo,
+            update_todo,
+            delete_todo,
+            get_all_todos
+        ],
+    )
+}
